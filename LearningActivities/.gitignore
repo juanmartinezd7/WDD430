@@ -1,27 +1,12 @@
 
-# dependencies
+# Dependencies
 node_modules/
 
-# Next.js
+# Next.js build output
 .next/
 out/
 
-# env
+# Environment variables
 .env*
 
-
-# dependencies
-node_modules/
-
-# Next.js
-.next/
-out/
-
-
-# dependencies
-node_modules/
-
-# Next.js
-.next/
-out/
 
