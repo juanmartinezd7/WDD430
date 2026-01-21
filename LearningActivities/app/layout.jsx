@@ -1,3 +1,7 @@
+//app/layout.jsx
+import "./globals.css";
+
+
 export const metadata = {
   title: "WDD 430",
   description: "Learning Activities",
