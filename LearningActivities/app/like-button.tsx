@@ -1,6 +1,5 @@
-//app/like-button.jsx
+//app/like-button.tsx
 'use client';
-
 import { useState } from 'react';
 
 export default function LikeButton() {
@@ -8,11 +7,13 @@ export default function LikeButton() {
 
   return (
     <button
-      className="mt-4 rounded bg-blue-600 px-3 py-2 text-white"
+      className="inline-flex items-center rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
       onClick={() => setLikes((l) => l + 1)}
     >
       Like ({likes})
     </button>
   );
 }
+
+
 

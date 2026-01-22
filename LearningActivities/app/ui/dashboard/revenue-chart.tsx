@@ -1,9 +1,10 @@
-//app/ui/dashboard/revenue-chart.js
+//app/ui/dashboard/revenue-chart.tsx
 import { generateYAxis } from "../../lib/utils";
 import { CalendarIcon } from "@heroicons/react/24/outline";
 import { lusitana } from "../fonts";
+import type { Revenue } from "@/app/lib/definitions";
 
-export default function RevenueChart({ revenue }) {
+export default function RevenueChart({ revenue }: { revenue: Revenue[] }) {
   const chartHeight = 350;
 
   const { yAxisLabels, topLabel } = generateYAxis(revenue);

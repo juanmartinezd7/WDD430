@@ -1,4 +1,4 @@
-//app/ui/fonts.js
+//app/ui/fonts.ts
 import { Lusitana } from "next/font/google";
 
 export const lusitana = Lusitana({
