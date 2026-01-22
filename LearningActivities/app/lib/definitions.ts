@@ -1,3 +1,4 @@
+// LearningActivities/app/lib/definitions.ts
 export type Revenue = {
   month: string;
   revenue: number;
@@ -22,4 +23,12 @@ export type User = {
   name: string;
   email: string;
   password: string;
+};
+
+export type LatestInvoice = {
+  id: string;
+  amount: string;      // tutorial uses formatted string like "$666.00"
+  name: string;
+  email: string;
+  image_url: string;
 };
