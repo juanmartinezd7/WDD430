@@ -1,12 +1,14 @@
 //app/ui/dashboard/revenue-chart.tsx
-import { generateYAxis } from "../../lib/utils";
-import { CalendarIcon } from "@heroicons/react/24/outline";
-import { lusitana } from "../fonts";
-import type { Revenue } from "@/app/lib/definitions";
 
-export default function RevenueChart({ revenue }: { revenue: Revenue[] }) {
+import { generateYAxis } from '@/app/lib/utils';
+import { CalendarIcon } from '@heroicons/react/24/outline';
+import { lusitana } from '@/app/ui/fonts';
+import { fetchRevenue } from '@/app/lib/data';
+
+export default async function RevenueChart() {
+  const revenue = await fetchRevenue();
+
   const chartHeight = 350;
-
   const { yAxisLabels, topLabel } = generateYAxis(revenue);
 
   if (!revenue || revenue.length === 0) {
@@ -21,7 +23,6 @@ export default function RevenueChart({ revenue }: { revenue: Revenue[] }) {
 
       <div className="rounded-xl bg-gray-50 p-4">
         <div className="sm:grid-cols-13 mt-0 grid grid-cols-12 items-end gap-2 rounded-md bg-white p-4 md:gap-4">
-          {/* Y-axis labels */}
           <div
             className="mb-6 hidden flex-col justify-between text-sm text-gray-400 sm:flex"
             style={{ height: `${chartHeight}px` }}
@@ -31,7 +32,6 @@ export default function RevenueChart({ revenue }: { revenue: Revenue[] }) {
             ))}
           </div>
 
-          {/* Bars */}
           {revenue.map((m) => (
             <div key={m.month} className="flex flex-col items-center gap-2">
               <div
