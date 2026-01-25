@@ -1,35 +1,13 @@
 // LearningActivities/app/ui/dashboard/latest-invoices.tsx
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
-import { clsx } from 'clsx';
+import clsx from 'clsx';
 import Image from 'next/image';
 import { lusitana } from '@/app/ui/fonts';
-//import { revenue } from '@/app/lib/placeholder-data';
-import type { LatestInvoice } from '@/app/lib/definitions';
+import { fetchLatestInvoices } from '@/app/lib/data';
 
+export default async function LatestInvoices() {
+  const latestInvoices = await fetchLatestInvoices();
 
-const latestInvoices: LatestInvoice[] = [
-  {
-    id: '1',
-    amount: '$666.00',
-    name: 'Evil Rabbit',
-    email: 'evil@rabbit.com',
-    image_url: '/customers/evil-rabbit.png',
-  },
-  {
-    id: '2',
-    amount: '$1,250.00',
-    name: 'Amy Burns',
-    email: 'amy@burns.com',
-    image_url: '/customers/amy-burns.png',
-  },
-];
-
-
-export default function LatestInvoices({
-  latestInvoices,
-}: {
-  latestInvoices: LatestInvoice[];
-}) {
   return (
     <div className="flex w-full flex-col md:col-span-4">
       <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
@@ -37,14 +15,14 @@ export default function LatestInvoices({
       </h2>
 
       <div className="flex grow flex-col justify-between rounded-xl bg-gray-50 p-4">
-        {/* Show invoices if you have them */}
         <div className="bg-white px-6">
           {latestInvoices.map((invoice, i) => (
             <div
               key={invoice.id}
-              className={clsx('flex flex-row items-center justify-between py-4', {
-                'border-t': i !== 0,
-              })}
+              className={clsx(
+                'flex flex-row items-center justify-between py-4',
+                { 'border-t': i !== 0 },
+              )}
             >
               <div className="flex items-center">
                 <Image
@@ -64,14 +42,15 @@ export default function LatestInvoices({
                 </div>
               </div>
 
-              <p className={`${lusitana.className} truncate text-sm font-medium md:text-base`}>
+              <p
+                className={`${lusitana.className} truncate text-sm font-medium md:text-base`}
+              >
                 {invoice.amount}
               </p>
             </div>
           ))}
         </div>
 
-        {/* Footer */}
         <div className="flex items-center pb-2 pt-6">
           <ArrowPathIcon className="h-5 w-5 text-gray-500" />
           <h3 className="ml-2 text-sm text-gray-500">Updated just now</h3>

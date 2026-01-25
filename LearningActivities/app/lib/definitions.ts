@@ -27,8 +27,21 @@ export type User = {
 
 export type LatestInvoice = {
   id: string;
-  amount: string;      // tutorial uses formatted string like "$666.00"
+  amount: string;      
   name: string;
   email: string;
   image_url: string;
+};
+
+export type Invoice = {
+  id: string; // Will be created on the database
+  customer_id: string;
+  amount: number; // Stored in cents
+  status: 'pending' | 'paid';
+  date: string;
+};
+
+export type CustomerField = {
+  id: string;
+  name: string;
 };
