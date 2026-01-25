@@ -1,4 +1,4 @@
-/// app/lib/actions.ts
+// app/lib/actions.ts
 
 'use server';
 
@@ -6,40 +6,70 @@ import { z } from 'zod';
 import clientPromise from '@/app/lib/mongodb';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { ObjectId } from 'mongodb';
 
-
-const FormSchema = z.object({
-  customerId: z.string().min(1, 'Customer is required'),
-  amount: z.coerce.number().gt(0, 'Amount must be greater than 0'),
+// ---------- CREATE ----------
+const CreateInvoiceSchema = z.object({
+  customerId: z.string().min(1),
+  amount: z.coerce.number().positive(), // user types dollars (e.g. 200)
   status: z.enum(['pending', 'paid']),
 });
 
 export async function createInvoice(formData: FormData) {
-  // 1) Extract + validate
-  const { customerId, amount, status } = FormSchema.parse({
+  const { customerId, amount, status } = CreateInvoiceSchema.parse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
     status: formData.get('status'),
   });
 
-  // 2) Store in cents (avoid floating point issues)
   const amountInCents = Math.round(amount * 100);
-
-  // 3) Create date "YYYY-MM-DD"
   const date = new Date().toISOString().split('T')[0];
 
-  // 4) Insert into MongoDB
   const client = await clientPromise;
   const db = client.db('test');
 
   await db.collection('invoices').insertOne({
-    customer_id: customerId, // match your existing invoice schema
+    customer_id: customerId,
     amount: amountInCents,
     status,
     date,
   });
 
-  // 5) Revalidate + redirect
+  revalidatePath('/dashboard/invoices');
+  redirect('/dashboard/invoices');
+}
+
+// ---------- UPDATE ----------
+const UpdateInvoiceSchema = z.object({
+  customerId: z.string().min(1),
+  amount: z.coerce.number().positive(), // user types dollars (e.g. 200)
+  status: z.enum(['pending', 'paid']),
+});
+
+export async function updateInvoice(id: string, formData: FormData) {
+  const { customerId, amount, status } = UpdateInvoiceSchema.parse({
+    customerId: formData.get('customerId'),
+    amount: formData.get('amount'),
+    status: formData.get('status'),
+  });
+
+  // IMPORTANT: multiply, not divide
+  const amountInCents = Math.round(amount * 100);
+
+  const client = await clientPromise;
+  const db = client.db('test');
+
+  await db.collection('invoices').updateOne(
+    { _id: new ObjectId(id) },
+    {
+      $set: {
+        customer_id: customerId,
+        amount: amountInCents,
+        status,
+      },
+    },
+  );
+
   revalidatePath('/dashboard/invoices');
   redirect('/dashboard/invoices');
 }

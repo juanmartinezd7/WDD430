@@ -1,8 +1,8 @@
 // app/lib/data.ts
-// app/lib/data.ts
 import clientPromise from '@/app/lib/mongodb';
 import type { Revenue, LatestInvoice, CustomerField } from './definitions';
 import { formatCurrency } from './utils';
+import { ObjectId } from 'mongodb';
 
 
 const ITEMS_PER_PAGE = 6;
@@ -160,4 +160,23 @@ export async function fetchCustomers(): Promise<CustomerField[]> {
     .toArray();
 
   return customers as CustomerField[];
+}
+
+export async function fetchInvoiceById(id: string) {
+  const client = await clientPromise;
+  const db = client.db('test');
+
+  
+  const { ObjectId } = await import('mongodb');
+
+  const invoice = await db.collection('invoices').findOne({ _id: new ObjectId(id) });
+
+  if (!invoice) return null;
+
+  return {
+    id: invoice._id.toString(),
+    customer_id: invoice.customer_id,
+    amount: invoice.amount,   
+    status: invoice.status,
+  };
 }
