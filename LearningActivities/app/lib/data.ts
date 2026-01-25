@@ -178,5 +178,6 @@ export async function fetchInvoiceById(id: string) {
     customer_id: invoice.customer_id,
     amount: invoice.amount,   
     status: invoice.status,
+    date: invoice.date,
   };
 }
