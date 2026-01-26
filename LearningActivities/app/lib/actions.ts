@@ -20,7 +20,7 @@ const UpdateInvoiceSchema = z.object({
   status: z.enum(['pending', 'paid']),
 });
 
-export async function createInvoice(formData: FormData) {
+export async function createInvoice(formData: FormData): Promise<void> {
   const { customerId, amount, status } = CreateInvoiceSchema.parse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
@@ -28,7 +28,7 @@ export async function createInvoice(formData: FormData) {
   });
 
   const amountInCents = Math.round(amount * 100);
-  const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  const date = new Date().toISOString().split('T')[0];
 
   try {
     const client = await clientPromise;
@@ -42,12 +42,14 @@ export async function createInvoice(formData: FormData) {
     });
   } catch (error) {
     console.error(error);
-    return { message: 'Database Error: Failed to Create Invoice.' };
+    // IMPORTANT: don't return an object from a form action
+    throw new Error('Database Error: Failed to Create Invoice.');
   }
 
   revalidatePath('/dashboard/invoices');
   redirect('/dashboard/invoices');
 }
+
 
 export async function updateInvoice(id: string, formData: FormData) {
   const { customerId, amount, status } = UpdateInvoiceSchema.parse({
@@ -74,7 +76,7 @@ export async function updateInvoice(id: string, formData: FormData) {
     );
   } catch (error) {
     console.error(error);
-    return { message: 'Database Error: Failed to Update Invoice.' };
+    throw new Error('Database Error: Failed to Create Invoice.');
   }
 
   revalidatePath('/dashboard/invoices');
@@ -89,7 +91,7 @@ export async function deleteInvoice(id: string) {
     await db.collection('invoices').deleteOne({ _id: new ObjectId(id) });
   } catch (error) {
     console.error(error);
-    return { message: 'Database Error: Failed to Delete Invoice.' };
+    throw new Error('Database Error: Failed to Create Invoice.');
   }
 
   revalidatePath('/dashboard/invoices');
