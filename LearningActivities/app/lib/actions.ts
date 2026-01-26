@@ -70,6 +70,17 @@ export async function updateInvoice(id: string, formData: FormData) {
     },
   );
 
+
+  await db.collection('invoices').deleteOne({ _id: new ObjectId(id) });
+
   revalidatePath('/dashboard/invoices');
-  redirect('/dashboard/invoices');
+}
+
+export async function deleteInvoice(id: string) {
+  const client = await clientPromise;
+  const db = client.db('test');
+
+  await db.collection('invoices').deleteOne({ _id: new ObjectId(id) });
+
+  revalidatePath('/dashboard/invoices');
 }
