@@ -33,7 +33,7 @@ export default function NavLinks() {
             )}
           >
             <LinkIcon className="h-5 w-5" />
-            <p className="hidden md:block">{link.name}</p>
+            <p className="block">{link.name}</p>
           </Link>
         );    
       })}
