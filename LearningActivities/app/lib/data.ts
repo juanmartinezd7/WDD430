@@ -2,6 +2,7 @@
 import clientPromise from '@/app/lib/mongodb';
 import type { Revenue, LatestInvoice, CustomerField } from './definitions';
 import { formatCurrency } from './utils';
+import type { Invoice } from './definitions';
 import { ObjectId } from 'mongodb';
 
 
@@ -162,22 +163,31 @@ export async function fetchCustomers(): Promise<CustomerField[]> {
   return customers as CustomerField[];
 }
 
-export async function fetchInvoiceById(id: string) {
-  const client = await clientPromise;
-  const db = client.db('test');
+export async function fetchInvoiceById(
+  id: string,
+): Promise<(Invoice & { id: string }) | null> {
+  if (!ObjectId.isValid(id)) return null;
 
-  
-  const { ObjectId } = await import('mongodb');
+  try {
+    const client = await clientPromise;
+    const db = client.db('test');
 
-  const invoice = await db.collection('invoices').findOne({ _id: new ObjectId(id) });
+    const doc = await db
+      .collection('invoices')
+      .findOne({ _id: new ObjectId(id) });
 
-  if (!invoice) return null;
+    if (!doc) return null;
 
-  return {
-    id: invoice._id.toString(),
-    customer_id: invoice.customer_id,
-    amount: invoice.amount,   
-    status: invoice.status,
-    date: invoice.date,
-  };
+    return {
+      id: doc._id.toString(),
+      customer_id: doc.customer_id,
+      amount: doc.amount,
+      status: doc.status,
+      date: doc.date,
+    };
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch invoice.');
+  }
 }
+

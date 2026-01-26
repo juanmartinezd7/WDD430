@@ -8,10 +8,15 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { ObjectId } from 'mongodb';
 
-// ---------- CREATE ----------
 const CreateInvoiceSchema = z.object({
   customerId: z.string().min(1),
-  amount: z.coerce.number().positive(), // user types dollars (e.g. 200)
+  amount: z.coerce.number().positive(),
+  status: z.enum(['pending', 'paid']),
+});
+
+const UpdateInvoiceSchema = z.object({
+  customerId: z.string().min(1),
+  amount: z.coerce.number().positive(),
   status: z.enum(['pending', 'paid']),
 });
 
@@ -23,28 +28,26 @@ export async function createInvoice(formData: FormData) {
   });
 
   const amountInCents = Math.round(amount * 100);
-  const date = new Date().toISOString().split('T')[0];
+  const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
-  const client = await clientPromise;
-  const db = client.db('test');
+  try {
+    const client = await clientPromise;
+    const db = client.db('test');
 
-  await db.collection('invoices').insertOne({
-    customer_id: customerId,
-    amount: amountInCents,
-    status,
-    date,
-  });
+    await db.collection('invoices').insertOne({
+      customer_id: customerId,
+      amount: amountInCents,
+      status,
+      date,
+    });
+  } catch (error) {
+    console.error(error);
+    return { message: 'Database Error: Failed to Create Invoice.' };
+  }
 
   revalidatePath('/dashboard/invoices');
   redirect('/dashboard/invoices');
 }
-
-// ---------- UPDATE ----------
-const UpdateInvoiceSchema = z.object({
-  customerId: z.string().min(1),
-  amount: z.coerce.number().positive(), // user types dollars (e.g. 200)
-  status: z.enum(['pending', 'paid']),
-});
 
 export async function updateInvoice(id: string, formData: FormData) {
   const { customerId, amount, status } = UpdateInvoiceSchema.parse({
@@ -53,34 +56,41 @@ export async function updateInvoice(id: string, formData: FormData) {
     status: formData.get('status'),
   });
 
-  // IMPORTANT: multiply, not divide
   const amountInCents = Math.round(amount * 100);
 
-  const client = await clientPromise;
-  const db = client.db('test');
+  try {
+    const client = await clientPromise;
+    const db = client.db('test');
 
-  await db.collection('invoices').updateOne(
-    { _id: new ObjectId(id) },
-    {
-      $set: {
-        customer_id: customerId,
-        amount: amountInCents,
-        status,
-      },
-    },
-  );
-
-
-  await db.collection('invoices').deleteOne({ _id: new ObjectId(id) });
+    await db.collection('invoices').updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          customer_id: customerId,
+          amount: amountInCents,
+          status,
+        },
+      }
+    );
+  } catch (error) {
+    console.error(error);
+    return { message: 'Database Error: Failed to Update Invoice.' };
+  }
 
   revalidatePath('/dashboard/invoices');
+  redirect('/dashboard/invoices');
 }
 
 export async function deleteInvoice(id: string) {
-  const client = await clientPromise;
-  const db = client.db('test');
+  try {
+    const client = await clientPromise;
+    const db = client.db('test');
 
-  await db.collection('invoices').deleteOne({ _id: new ObjectId(id) });
+    await db.collection('invoices').deleteOne({ _id: new ObjectId(id) });
+  } catch (error) {
+    console.error(error);
+    return { message: 'Database Error: Failed to Delete Invoice.' };
+  }
 
   revalidatePath('/dashboard/invoices');
 }

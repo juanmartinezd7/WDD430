@@ -38,3 +38,8 @@ export type CustomerField = {
   id: string;
   name: string;
 };
+
+
+export type InvoiceForm = 
+Invoice & { id: string };
+
