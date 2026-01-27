@@ -1,3 +1,4 @@
+// LearningActivities/app/query/route.ts
 import { NextResponse } from "next/server";
 import { MongoClient } from "mongodb";
 import { attachDatabasePool } from "@vercel/functions";

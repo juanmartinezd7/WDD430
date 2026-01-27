@@ -1,4 +1,4 @@
-// components/dashboard/cards.tsx
+// LearningActivities/app/ui/dashboard/cards.tsx
 import {
   BanknotesIcon,
   ClockIcon,

@@ -5,6 +5,32 @@ import { formatCurrency } from './utils';
 import type { Invoice } from './definitions';
 import { ObjectId } from 'mongodb';
 
+export type CustomerListItem = {
+  id: string;
+  name: string;
+  email: string;
+  image_url: string;
+};
+
+export async function fetchCustomersList(): Promise<CustomerListItem[]> {
+  const client = await clientPromise;
+  const db = client.db('test');
+
+  const customers = await db
+    .collection('customers')
+    .find({})
+    .sort({ name: 1 })
+    .project({ _id: 0, id: 1, name: 1, email: 1, image_url: 1 })
+    .toArray();
+
+  return customers.map((c: any) => ({
+    id: c.id,
+    name: c.name ?? 'Unknown',
+    email: c.email ?? '',
+    image_url: c.image_url ?? '/customers/default.png',
+  }));
+}
+
 
 const ITEMS_PER_PAGE = 6;
 
