@@ -4,7 +4,8 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { authConfig } from './auth.config';
 import { z } from 'zod';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
+
 
 import clientPromise from '@/app/lib/mongodb';
 import type { User } from '@/app/lib/definitions';
