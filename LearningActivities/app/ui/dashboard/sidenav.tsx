@@ -3,6 +3,7 @@ import Link from 'next/link';
 import NavLinks from './nav-links';
 import { PowerIcon } from '@heroicons/react/24/outline';
 import AcmeLogo from '@/app/ui/acme-logo';
+import { signOut } from '@/auth';
 
 export default function SideNav() {
   return (
@@ -20,14 +21,19 @@ export default function SideNav() {
         <NavLinks />
 
         <div className="mt-auto pt-4">
-          <button className="flex w-full items-center gap-2 rounded-md p-2 text-sm font-medium hover:bg-gray-100">
-            <PowerIcon className="h-5 w-5" />
-            <span className="hidden md:block">Sign Out</span>
-          </button>
+          <form
+            action={async () => {
+              'use server';
+              await signOut({ redirectTo: '/' });
+            }}
+          >
+            <button className="flex w-full items-center gap-2 rounded-md p-2 text-sm font-medium hover:bg-gray-100">
+              <PowerIcon className="h-5 w-5" />
+              <span className="hidden md:block">Sign Out</span>
+            </button>
+          </form>
         </div>
       </div>
     </div>
   );
 }
-
-

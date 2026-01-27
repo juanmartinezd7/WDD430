@@ -7,6 +7,8 @@ import clientPromise from '@/app/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { signIn } from '@/auth';
+import { AuthError } from 'next-auth';
 
 
 const FormSchema = z.object({
@@ -134,3 +136,21 @@ export async function deleteInvoice(id: string) {
 
   revalidatePath('/dashboard/invoices');
 }
+
+
+
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  try {
+    await signIn('credentials', formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      if (error.type === 'CredentialsSignin') return 'Invalid credentials.';
+      return 'Something went wrong.';
+    }
+    throw error;
+  }
+}
+
